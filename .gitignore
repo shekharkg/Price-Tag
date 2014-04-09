@@ -4,3 +4,4 @@
 .DS_Store
 .idea/
 app/app.iml
+app/src/main/res/values/url.xml

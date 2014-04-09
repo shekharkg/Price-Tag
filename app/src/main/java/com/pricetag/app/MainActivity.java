@@ -65,6 +65,7 @@ public class MainActivity extends ActionBarActivity implements AbsListView.OnIte
             Intent setIntentProdId = new Intent(this, DrawerActivity.class);
             setIntentProdId.putExtra("shownToDrawer",shownToDrawer);
             setIntentProdId.putExtra("baseUrl", productUrl.getUrl());
+            setIntentProdId.putExtra("selectPosition", position);
             startActivity(setIntentProdId);
         }
     }
