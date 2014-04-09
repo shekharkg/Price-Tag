@@ -85,7 +85,7 @@ public class GridAdapter extends ArrayAdapter<ProductData> {
               vh.btnGo.setOnClickListener(new View.OnClickListener() {
                   @Override
                   public void onClick(final View v) {
-                      Toast.makeText(getContext(), "Price : " +
+                      Toast.makeText(getContext(), "Url : " +
                               getItem(position).getUrl(), Toast.LENGTH_SHORT).show();
                   }
               });

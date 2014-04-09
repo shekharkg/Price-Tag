@@ -12,6 +12,7 @@ import android.support.v4.app.ActionBarDrawerToggle;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -25,19 +26,16 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.SearchView;
 import android.widget.TextView;
-
 import com.etsy.android.grid.StaggeredGridView;
-
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.select.Elements;
-
 import java.io.IOException;
 
 /**
  * Created by SKG on 10-Apr-14.
  */
-public class DrawerActivity extends ActionBarActivity implements AbsListView.OnScrollListener, AbsListView.OnItemClickListener, SearchView.OnQueryTextListener{
+public class DrawerSpinnerActivity extends ActionBarActivity implements AbsListView.OnScrollListener, AbsListView.OnItemClickListener, SearchView.OnQueryTextListener, ActionBar.OnNavigationListener {
 
     private static final String TAG = "MainActivity";
     private static StaggeredGridView myGridView;
@@ -50,12 +48,12 @@ public class DrawerActivity extends ActionBarActivity implements AbsListView.OnS
     private DrawerLayout mDrawerLayout;
     private ListView mDrawerList;
     private ActionBarDrawerToggle mDrawerToggle;
-    private String[] myDrawerTitles;
-    private String[] myDrawerUrls;
+    private String[] myDrawerTitles, myDrawerUrls, mySpinnerTitles, mySpinnerUrls;
     static int drawerValue;
     private String baseUrl;
     private int positionValue;
     String productTitle, productImage, productUrl;
+    private static final String STATE_SELECTED_NAVIGATION_ITEM = "selected_navigation_item";
 
     @Override
     protected void onCreate(Bundle savedInstanceStateCategory) {
@@ -67,13 +65,24 @@ public class DrawerActivity extends ActionBarActivity implements AbsListView.OnS
             baseUrl = getIntentFromMainActivity.getStringExtra("baseUrl");
             myDrawerTitles = getIntentFromMainActivity.getStringArrayExtra("shownToDrawer");
             myDrawerUrls = getIntentFromMainActivity.getStringArrayExtra("shownToDrawerUrl");
+            mySpinnerTitles = getIntentFromMainActivity.getStringArrayExtra("shownToSpinner");
+            mySpinnerUrls = getIntentFromMainActivity.getStringArrayExtra("shownToSpinnerUrl");
             positionValue = getIntentFromMainActivity.getIntExtra("selectPosition",0);
         }
 
         mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
         mDrawerList = (ListView) findViewById(R.id.left_drawer);
 
-
+        // Set up the action bar to show a dropdown list.
+        final ActionBar actionBar = getSupportActionBar();
+        actionBar.setDisplayShowTitleEnabled(false);
+        actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_LIST);
+        // Set up the dropdown list navigation in the action bar.
+        actionBar.setListNavigationCallbacks(
+                // Specify a SpinnerAdapter to populate the dropdown list.
+                new ArrayAdapter<String>(
+                        actionBar.getThemedContext(),android.R.layout.simple_list_item_1,
+                        android.R.id.text1, mySpinnerTitles), this);
 
         // set a custom shadow that overlays the main content when the drawer opens
         mDrawerLayout.setDrawerShadow(R.drawable.drawer_shadow, GravityCompat.START);
@@ -104,10 +113,14 @@ public class DrawerActivity extends ActionBarActivity implements AbsListView.OnS
             }
         };
         mDrawerLayout.setDrawerListener(mDrawerToggle);
-
-            selectItem(positionValue);
     }
 
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        // Serialize the current dropdown position.
+        outState.putInt(STATE_SELECTED_NAVIGATION_ITEM,
+                getSupportActionBar().getSelectedNavigationIndex());
+    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -126,38 +139,46 @@ public class DrawerActivity extends ActionBarActivity implements AbsListView.OnS
         return super.onPrepareOptionsMenu(menu);
     }
 
+
+
     /* The click listner for ListView in the navigation drawer */
     private class DrawerItemClickListener implements ListView.OnItemClickListener {
         @Override
         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-            selectItem(position);
+            Intent setIntentProdId = new Intent(DrawerSpinnerActivity.this, DrawerActivity.class);
+            setIntentProdId.putExtra("shownToDrawer",myDrawerTitles);
+            setIntentProdId.putExtra("shownToDrawerUrl",myDrawerUrls);
+            setIntentProdId.putExtra("baseUrl", myDrawerUrls[position]);
+            setIntentProdId.putExtra("selectPosition", position);
+            finish();
+            startActivity(setIntentProdId);
         }
     }
-
+    @Override
+    public boolean onNavigationItemSelected(int i, long l) {
+        //selectItem(i);
+        return true;
+    }
     private void selectItem(int position) {
         // update the main content by replacing fragments
-        baseUrl = myDrawerUrls[position];
+        baseUrl = mySpinnerUrls[position];
         Fragment fragment = new PlanetFragment();
-
         Bundle args = new Bundle();
         args.putInt(PlanetFragment.ARG_PLANET_NUMBER, position);
         fragment.setArguments(args);
-
         FragmentManager fragmentManager = getFragmentManager();
         fragmentManager.beginTransaction().replace(R.id.content_frame, fragment).commit();
 
         // update selected item and title, then close the drawer
-        mDrawerList.setItemChecked(position, true);
+        mDrawerList.setItemChecked(position, false);
         mDrawerLayout.closeDrawer(mDrawerList);
     }
 
 
     @Override
     public boolean onQueryTextSubmit(String query) {
-        Intent setIntentSearch = new Intent(this,DrawerActivity.class);
-        setIntentSearch.putExtra("searchValue", query);
-        startActivity(setIntentSearch);
-        return true;
+
+        return false;
     }
 
     @Override
@@ -178,27 +199,7 @@ public class DrawerActivity extends ActionBarActivity implements AbsListView.OnS
 
     @Override
     public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
-        if(position != myAdapter.getCount()) {
-            ProductData productUrl = myAdapter.getItem(position);
-            String[] shownToSpinnerUrl = new String[myAdapter.getCount()];
-            String[] shownToSpinner = new String[myAdapter.getCount()];
-            if(productUrl.getUrl().contains("-store") == true){
-                for(int i=0; i<myAdapter.getCount();i++){
-                    ProductData productDetails = myAdapter.getItem(i);
-                    shownToSpinner[i] = productDetails.getTitle();
-                    shownToSpinnerUrl[i] = productDetails.getUrl();
-                }
-                Intent setIntentProdId = new Intent(this, DrawerSpinnerActivity.class);
-                setIntentProdId.putExtra("shownToDrawer",myDrawerTitles);
-                setIntentProdId.putExtra("shownToDrawerUrl",myDrawerUrls);
-                setIntentProdId.putExtra("shownToSpinner",shownToSpinner);
-                setIntentProdId.putExtra("shownToSpinnerUrl",shownToSpinnerUrl);
-                setIntentProdId.putExtra("baseUrl", shownToSpinnerUrl[position]);
-                setIntentProdId.putExtra("selectPosition", position);
-                finish();
-                startActivity(setIntentProdId);
-            }
-        }
+
     }
 
     @Override
@@ -279,10 +280,10 @@ public class DrawerActivity extends ActionBarActivity implements AbsListView.OnS
             txtFooterTitle =  (TextView) footer.findViewById(R.id.txt_title);
             txtFooterTitle.setText("THE FOOTER!");
             myGridView.addFooterView(footer);
-            myAdapter = new GridAdapter(DrawerActivity.this, R.id.txt_line);
+            myAdapter = new GridAdapter(DrawerSpinnerActivity.this, R.id.txt_line);
             myGridView.setAdapter(myAdapter);
-            myGridView.setOnScrollListener(DrawerActivity.this);
-            myGridView.setOnItemClickListener(DrawerActivity.this);
+            myGridView.setOnScrollListener(DrawerSpinnerActivity.this);
+            myGridView.setOnItemClickListener(DrawerSpinnerActivity.this);
             new HttpAsyncTask().execute(baseUrl);
             return rootView;
         }
