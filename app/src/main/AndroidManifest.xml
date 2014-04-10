@@ -21,6 +21,8 @@
             android:configChanges="orientation|screenSize"/>
         <activity android:name="com.pricetag.app.DrawerSpinnerActivity"
             android:configChanges="orientation|screenSize"/>
+        <activity android:name="com.pricetag.app.PriceListActivity"
+            android:configChanges="orientation|screenSize"/>
     </application>
 
     <uses-permission android:name="android.permission.INTERNET" />

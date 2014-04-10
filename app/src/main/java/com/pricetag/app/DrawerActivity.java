@@ -154,10 +154,7 @@ public class DrawerActivity extends ActionBarActivity implements AbsListView.OnS
 
     @Override
     public boolean onQueryTextSubmit(String query) {
-        Intent setIntentSearch = new Intent(this,DrawerActivity.class);
-        setIntentSearch.putExtra("searchValue", query);
-        startActivity(setIntentSearch);
-        return true;
+        return false;
     }
 
     @Override
@@ -198,6 +195,22 @@ public class DrawerActivity extends ActionBarActivity implements AbsListView.OnS
                 finish();
                 startActivity(setIntentProdId);
             }
+            else{
+                for(int i=0; i<myAdapter.getCount();i++){
+                    ProductData productDetails = myAdapter.getItem(i);
+                    shownToSpinner[i] = productDetails.getTitle();
+                    shownToSpinnerUrl[i] = productDetails.getUrl();
+                }
+                Intent setIntentProdId = new Intent(this, PriceListActivity.class);
+                setIntentProdId.putExtra("shownToDrawer",myDrawerTitles);
+                setIntentProdId.putExtra("shownToDrawerUrl",myDrawerUrls);
+                setIntentProdId.putExtra("shownToSpinner",shownToSpinner);
+                setIntentProdId.putExtra("shownToSpinnerUrl",shownToSpinnerUrl);
+                setIntentProdId.putExtra("baseUrl", shownToSpinnerUrl[position]);
+                setIntentProdId.putExtra("selectPosition", position);
+                finish();
+                startActivity(setIntentProdId);
+            }
         }
     }
 
@@ -229,6 +242,7 @@ public class DrawerActivity extends ActionBarActivity implements AbsListView.OnS
                 doc = Jsoup.connect(urls[0]).userAgent("Mozilla").get();
             } catch (IOException e) {
                 e.printStackTrace();
+                return doc;
             }
             return doc;
         }
@@ -236,7 +250,7 @@ public class DrawerActivity extends ActionBarActivity implements AbsListView.OnS
         @Override
         protected void onPostExecute(Document doc) {
             ConnectivityManager connec = (ConnectivityManager)getSystemService(Context.CONNECTIVITY_SERVICE);
-            if (connec != null && (connec.getNetworkInfo(1).getState() == NetworkInfo.State.CONNECTED) ||(connec.getNetworkInfo(0).getState() == NetworkInfo.State.CONNECTED)) {
+            if (doc != null && connec != null && (connec.getNetworkInfo(1).getState() == NetworkInfo.State.CONNECTED) ||((doc != null && connec.getNetworkInfo(0).getState() == NetworkInfo.State.CONNECTED))) {
                 //You are connected, do something online.
                 Elements title_url = doc.select("[itemprop=itemListElement]");
                 Elements image = doc.select("[height=221]");
@@ -252,6 +266,8 @@ public class DrawerActivity extends ActionBarActivity implements AbsListView.OnS
             }else if (connec.getNetworkInfo(0).getState() == NetworkInfo.State.DISCONNECTED ||  connec.getNetworkInfo(1).getState() == NetworkInfo.State.DISCONNECTED ) {
                 //Not connected.
                 txtFooterTitle.setText("Connect to Internet...");
+            }else{
+                txtFooterTitle.setText("Connection Problem...");
             }
 
         }

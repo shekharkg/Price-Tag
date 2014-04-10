@@ -32,7 +32,7 @@ public class MainActivity extends ActionBarActivity implements AbsListView.OnIte
         getLayoutFooter = getLayoutInflater();
         footer = getLayoutFooter.inflate(R.layout.list_item_header_footer, null);
         txtFooterTitle =  (TextView) footer.findViewById(R.id.txt_title);
-        txtFooterTitle.setText("THE FOOTER!");
+        txtFooterTitle.setText(" ");
         myGridView.addFooterView(footer);
         myAdapter = new GridAdapter(this, R.id.txt_line);
         myGridView.setAdapter(myAdapter);

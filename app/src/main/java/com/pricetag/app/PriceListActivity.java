@@ -38,7 +38,7 @@ import java.io.IOException;
 /**
  * Created by SKG on 10-Apr-14.
  */
-public class DrawerSpinnerActivity extends ActionBarActivity implements AbsListView.OnScrollListener, AbsListView.OnItemClickListener, SearchView.OnQueryTextListener, ActionBar.OnNavigationListener {
+public class PriceListActivity extends ActionBarActivity implements AbsListView.OnScrollListener, AbsListView.OnItemClickListener, SearchView.OnQueryTextListener, ActionBar.OnNavigationListener {
 
     private static final String TAG = "MainActivity";
     private static StaggeredGridView myGridView;
@@ -148,7 +148,7 @@ public class DrawerSpinnerActivity extends ActionBarActivity implements AbsListV
     private class DrawerItemClickListener implements ListView.OnItemClickListener {
         @Override
         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-            Intent setIntentProdId = new Intent(DrawerSpinnerActivity.this, DrawerActivity.class);
+            Intent setIntentProdId = new Intent(PriceListActivity.this, DrawerActivity.class);
             setIntentProdId.putExtra("shownToDrawer",myDrawerTitles);
             setIntentProdId.putExtra("shownToDrawerUrl",myDrawerUrls);
             setIntentProdId.putExtra("baseUrl", myDrawerUrls[position]);
@@ -202,43 +202,7 @@ public class DrawerSpinnerActivity extends ActionBarActivity implements AbsListV
 
     @Override
     public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
-        if(position != myAdapter.getCount()) {
-            ProductData productUrl = myAdapter.getItem(position);
-            String[] shownToSpinnerUrl = new String[myAdapter.getCount()];
-            String[] shownToSpinner = new String[myAdapter.getCount()];
-            if(productUrl.getUrl().contains("-store") == true){
-                for(int i=0; i<myAdapter.getCount();i++){
-                    ProductData productDetails = myAdapter.getItem(i);
-                    shownToSpinner[i] = productDetails.getTitle();
-                    shownToSpinnerUrl[i] = productDetails.getUrl();
-                }
-                Intent setIntentProdId = new Intent(this, DrawerSpinnerActivity.class);
-                setIntentProdId.putExtra("shownToDrawer",myDrawerTitles);
-                setIntentProdId.putExtra("shownToDrawerUrl",myDrawerUrls);
-                setIntentProdId.putExtra("shownToSpinner",shownToSpinner);
-                setIntentProdId.putExtra("shownToSpinnerUrl",shownToSpinnerUrl);
-                setIntentProdId.putExtra("baseUrl", shownToSpinnerUrl[position]);
-                setIntentProdId.putExtra("selectPosition", position);
-                finish();
-                startActivity(setIntentProdId);
-            }
-            else{
-                for(int i=0; i<myAdapter.getCount();i++){
-                    ProductData productDetails = myAdapter.getItem(i);
-                    shownToSpinner[i] = productDetails.getTitle();
-                    shownToSpinnerUrl[i] = productDetails.getUrl();
-                }
-                Intent setIntentProdId = new Intent(this, PriceListActivity.class);
-                setIntentProdId.putExtra("shownToDrawer",myDrawerTitles);
-                setIntentProdId.putExtra("shownToDrawerUrl",myDrawerUrls);
-                setIntentProdId.putExtra("shownToSpinner",shownToSpinner);
-                setIntentProdId.putExtra("shownToSpinnerUrl",shownToSpinnerUrl);
-                setIntentProdId.putExtra("baseUrl", shownToSpinnerUrl[position]);
-                setIntentProdId.putExtra("selectPosition", position);
-                finish();
-                startActivity(setIntentProdId);
-            }
-        }
+
 
     }
 
@@ -280,12 +244,12 @@ public class DrawerSpinnerActivity extends ActionBarActivity implements AbsListV
             ConnectivityManager connec = (ConnectivityManager)getSystemService(Context.CONNECTIVITY_SERVICE);
             if (doc != null && connec != null && (connec.getNetworkInfo(1).getState() == NetworkInfo.State.CONNECTED) ||(doc != null && (connec.getNetworkInfo(0).getState() == NetworkInfo.State.CONNECTED))) {
                 //You are connected, do something online.
-                Elements title_url = doc.select("[itemprop=itemListElement]");
-                Elements image = doc.select("[height=221]");
-                for(int i=0; i<title_url.size()-4; i++){
-                    productTitle = title_url.get(i).text();
-                    productUrl = title_url.get(i).attr("abs:href");
-                    productImage = image.get(i).attr("abs:src");
+                Elements title_img = doc.select("[height=115]");
+                Elements price = doc.select("[class=price]");
+                for(int i=0; i<title_img.size(); i++){
+                    productTitle = title_img.get(i).attr("abs:alt");
+                    productUrl = price.get(i).text();
+                    productImage = title_img.get(i).attr("abs:src");
                     myAdapter.add(new ProductData(productTitle, productImage, productUrl));
                 }
 
@@ -324,10 +288,10 @@ public class DrawerSpinnerActivity extends ActionBarActivity implements AbsListV
             txtFooterTitle =  (TextView) footer.findViewById(R.id.txt_title);
             txtFooterTitle.setText("THE FOOTER!");
             myGridView.addFooterView(footer);
-            myAdapter = new GridAdapter(DrawerSpinnerActivity.this, R.id.txt_line);
+            myAdapter = new GridAdapter(PriceListActivity.this, R.id.txt_line);
             myGridView.setAdapter(myAdapter);
-            myGridView.setOnScrollListener(DrawerSpinnerActivity.this);
-            myGridView.setOnItemClickListener(DrawerSpinnerActivity.this);
+            myGridView.setOnScrollListener(PriceListActivity.this);
+            myGridView.setOnItemClickListener(PriceListActivity.this);
             new HttpAsyncTask().execute(baseUrl);
             return rootView;
         }
