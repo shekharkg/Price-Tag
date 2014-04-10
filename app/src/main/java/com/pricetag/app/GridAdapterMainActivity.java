@@ -7,10 +7,10 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 
 import com.etsy.android.grid.util.DynamicHeightImageView;
 import com.etsy.android.grid.util.DynamicHeightTextView;
-import com.koushikdutta.ion.Ion;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -19,11 +19,12 @@ import java.util.Random;
 /**
  * Created by SKG on 24-Mar-14.
  */
-public class GridAdapter extends ArrayAdapter<ProductData> {
+public class GridAdapterMainActivity extends ArrayAdapter<ProductData> {
 
     private static final String TAG = "GridAdapter";
     static class ViewHolder {
         DynamicHeightTextView txtLineOne;
+        Button btnGo;
         DynamicHeightImageView productImg;
     }
 
@@ -33,7 +34,7 @@ public class GridAdapter extends ArrayAdapter<ProductData> {
     ArrayList<Integer> mBackgroundColors;
     List<ProductData> myData;
 
-    public GridAdapter(Context context, int resource) {
+    public GridAdapterMainActivity(Context context, int resource) {
         super(context, resource);
         myLayoutInflater = LayoutInflater.from(context);
         myRandom = new Random();
@@ -74,7 +75,26 @@ public class GridAdapter extends ArrayAdapter<ProductData> {
 
         vh.productImg.setHeightRatio(positionHeight);
         vh.txtLineOne.setText(getItem(position).getTitle());
-        Ion.with(vh.productImg).placeholder(R.drawable.product).error(R.drawable.product).load(getItem(position).getImage());
+        switch (position) {
+            case 0:
+                vh.productImg.setImageResource(R.drawable.mobiles);
+                break;
+            case 1:
+                vh.productImg.setImageResource(R.drawable.consumer_electronics);
+                break;
+            case 2:
+                vh.productImg.setImageResource(R.drawable.clothing);
+                break;
+            case 3:
+                vh.productImg.setImageResource(R.drawable.kitchen);
+                break;
+            case 4:
+                vh.productImg.setImageResource(R.drawable.automobiles);
+                break;
+            case 5:
+                vh.productImg.setImageResource(R.drawable.health);
+                break;
+        }
         return convertView;
     }
     private double getPositionRatio(final int position) {

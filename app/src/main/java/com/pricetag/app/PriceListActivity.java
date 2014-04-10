@@ -26,9 +26,7 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.SearchView;
 import android.widget.TextView;
-
 import com.etsy.android.grid.StaggeredGridView;
-
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.select.Elements;
@@ -42,8 +40,9 @@ public class PriceListActivity extends ActionBarActivity implements AbsListView.
 
     private static final String TAG = "MainActivity";
     private static StaggeredGridView myGridView;
-    private static GridAdapter myAdapter;
+    private static GridAdapterPriceList myAdapter;
     private static LayoutInflater layoutInflater;
+    private boolean myHasRequestedMore;
     private static View footer;
     private static TextView txtFooterTitle;
     private static SearchView mSearchView;
@@ -54,13 +53,16 @@ public class PriceListActivity extends ActionBarActivity implements AbsListView.
     static int drawerValue;
     private String baseUrl;
     private int positionValue;
-    String productTitle, productImage, productUrl;
+    String productTitle, productImage, productPrice;
     private static final String STATE_SELECTED_NAVIGATION_ITEM = "selected_navigation_item";
+    private int start, minus;
 
     @Override
     protected void onCreate(Bundle savedInstanceStateCategory) {
         super.onCreate(savedInstanceStateCategory);
         setContentView(R.layout.drawer_layout);
+        start = 1;
+        minus = 0;
 
         Intent getIntentFromMainActivity = getIntent();
         if (getIntentFromMainActivity != null) {
@@ -197,6 +199,25 @@ public class PriceListActivity extends ActionBarActivity implements AbsListView.
 
     @Override
     public void onScroll(final AbsListView view, final int firstVisibleItem, final int visibleItemCount, final int totalItemCount) {
+        if (!myHasRequestedMore) {
+            int lastInScreen = firstVisibleItem + visibleItemCount;
+            if ((lastInScreen >= totalItemCount)){
+                Log.d(TAG, "onScroll lastInScreen - so load more");
+                myHasRequestedMore = true;
+                onLoadMoreItems();
+            }
+        }
+    }
+    private void onLoadMoreItems() {
+        start += 1;
+        int replace;
+        if(start==2){
+            baseUrl = baseUrl+"?page="+start+"&resultonly=true";
+        }else{
+            replace = start-1;
+            baseUrl = baseUrl.replace("?page="+replace,"?page="+start);
+        }
+        new HttpAsyncTask().execute(baseUrl);
     }
 
 
@@ -231,7 +252,7 @@ public class PriceListActivity extends ActionBarActivity implements AbsListView.
         protected Document doInBackground(String... urls) {
             Document doc = null;
             try {
-                doc = Jsoup.connect(urls[0]).userAgent("Mozilla").get();
+                doc = Jsoup.connect(baseUrl).userAgent("Mozilla").get();
             } catch (IOException e) {
                 e.printStackTrace();
                 return doc;
@@ -242,29 +263,34 @@ public class PriceListActivity extends ActionBarActivity implements AbsListView.
         @Override
         protected void onPostExecute(Document doc) {
             ConnectivityManager connec = (ConnectivityManager)getSystemService(Context.CONNECTIVITY_SERVICE);
+
+
             if (doc != null && connec != null && (connec.getNetworkInfo(1).getState() == NetworkInfo.State.CONNECTED) ||(doc != null && (connec.getNetworkInfo(0).getState() == NetworkInfo.State.CONNECTED))) {
                 //You are connected, do something online.
                 Elements title_img = doc.select("[height=115]");
                 Elements price = doc.select("[class=price]");
-                for(int i=0; i<title_img.size(); i++){
+                for(int i=minus; i<title_img.size(); i++){
                     productTitle = title_img.get(i).attr("abs:alt");
-                    productUrl = price.get(i).text();
+                    productPrice = price.get(i).text();
+                    productPrice = productPrice.replace("Starts at","");
                     productImage = title_img.get(i).attr("abs:src");
-                    myAdapter.add(new ProductData(productTitle, productImage, productUrl));
+                    if(productImage.contains("pd.jpg") == true){
+                        productImage = title_img.get(i).attr("abs:data-original");
+                    }
+                    myAdapter.add(new ProductData(productTitle, productImage, productPrice));
                 }
 
                 myAdapter.notifyDataSetChanged();
+                myHasRequestedMore = false;
                 txtFooterTitle.setText("");
+                minus = 5;
             }else if (connec.getNetworkInfo(0).getState() == NetworkInfo.State.DISCONNECTED ||  connec.getNetworkInfo(1).getState() == NetworkInfo.State.DISCONNECTED ) {
                 //Not connected.
                 txtFooterTitle.setText("Connect to Internet...");
             }else{
                 txtFooterTitle.setText("Connection Problem...");
             }
-
-
         }
-
     }
 
     /**
@@ -288,7 +314,7 @@ public class PriceListActivity extends ActionBarActivity implements AbsListView.
             txtFooterTitle =  (TextView) footer.findViewById(R.id.txt_title);
             txtFooterTitle.setText("THE FOOTER!");
             myGridView.addFooterView(footer);
-            myAdapter = new GridAdapter(PriceListActivity.this, R.id.txt_line);
+            myAdapter = new GridAdapterPriceList(PriceListActivity.this, R.id.txt_line);
             myGridView.setAdapter(myAdapter);
             myGridView.setOnScrollListener(PriceListActivity.this);
             myGridView.setOnItemClickListener(PriceListActivity.this);

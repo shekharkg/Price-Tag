@@ -15,7 +15,7 @@ import com.etsy.android.grid.StaggeredGridView;
 public class MainActivity extends ActionBarActivity implements AbsListView.OnItemClickListener, AbsListView.OnScrollListener {
 
     StaggeredGridView myGridView;
-    GridAdapter myAdapter;
+    GridAdapterMainActivity myAdapter;
     LayoutInflater getLayoutFooter;
     View footer;
     TextView txtFooterTitle;
@@ -34,7 +34,7 @@ public class MainActivity extends ActionBarActivity implements AbsListView.OnIte
         txtFooterTitle =  (TextView) footer.findViewById(R.id.txt_title);
         txtFooterTitle.setText(" ");
         myGridView.addFooterView(footer);
-        myAdapter = new GridAdapter(this, R.id.txt_line);
+        myAdapter = new GridAdapterMainActivity(this, R.id.txt_line);
         myGridView.setAdapter(myAdapter);
         myGridView.setOnScrollListener(this);
         myGridView.setOnItemClickListener(this);

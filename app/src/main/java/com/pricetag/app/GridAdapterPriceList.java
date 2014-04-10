@@ -7,6 +7,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.TextView;
 
 import com.etsy.android.grid.util.DynamicHeightImageView;
 import com.etsy.android.grid.util.DynamicHeightTextView;
@@ -19,11 +20,12 @@ import java.util.Random;
 /**
  * Created by SKG on 24-Mar-14.
  */
-public class GridAdapter extends ArrayAdapter<ProductData> {
+public class GridAdapterPriceList extends ArrayAdapter<ProductData> {
 
     private static final String TAG = "GridAdapter";
     static class ViewHolder {
         DynamicHeightTextView txtLineOne;
+        TextView txtPrice;
         DynamicHeightImageView productImg;
     }
 
@@ -33,7 +35,7 @@ public class GridAdapter extends ArrayAdapter<ProductData> {
     ArrayList<Integer> mBackgroundColors;
     List<ProductData> myData;
 
-    public GridAdapter(Context context, int resource) {
+    public GridAdapterPriceList(Context context, int resource) {
         super(context, resource);
         myLayoutInflater = LayoutInflater.from(context);
         myRandom = new Random();
@@ -53,9 +55,10 @@ public class GridAdapter extends ArrayAdapter<ProductData> {
 
         ViewHolder vh;
         if (convertView == null) {
-            convertView = myLayoutInflater.inflate(R.layout.list_item_main, parent, false);
+            convertView = myLayoutInflater.inflate(R.layout.list_item, parent, false);
             vh = new ViewHolder();
             vh.txtLineOne = (DynamicHeightTextView) convertView.findViewById(R.id.txt_line);
+            vh.txtPrice = (TextView) convertView.findViewById(R.id.txt_price);
             vh.productImg = (DynamicHeightImageView) convertView.findViewById(R.id.product_img);
 
             convertView.setTag(vh);
@@ -74,7 +77,10 @@ public class GridAdapter extends ArrayAdapter<ProductData> {
 
         vh.productImg.setHeightRatio(positionHeight);
         vh.txtLineOne.setText(getItem(position).getTitle());
+        vh.txtPrice.setText(getItem(position).getUrl());
         Ion.with(vh.productImg).placeholder(R.drawable.product).error(R.drawable.product).load(getItem(position).getImage());
+
+
         return convertView;
     }
     private double getPositionRatio(final int position) {
