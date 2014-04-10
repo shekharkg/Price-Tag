@@ -10,7 +10,6 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.ActionBarDrawerToggle;
 import android.support.v4.view.GravityCompat;
-import android.support.v4.view.MenuItemCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
@@ -37,7 +36,7 @@ import java.io.IOException;
 /**
  * Created by SKG on 10-Apr-14.
  */
-public class DrawerActivity extends ActionBarActivity implements AbsListView.OnScrollListener, AbsListView.OnItemClickListener, SearchView.OnQueryTextListener{
+public class DrawerActivity extends ActionBarActivity implements AbsListView.OnScrollListener, AbsListView.OnItemClickListener{
 
     private static final String TAG = "MainActivity";
     private static StaggeredGridView myGridView;
@@ -112,9 +111,6 @@ public class DrawerActivity extends ActionBarActivity implements AbsListView.OnS
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.main, menu);
-        MenuItem searchItem = menu.findItem(R.id.action_search);
-        mSearchView = (SearchView) MenuItemCompat.getActionView(searchItem);
-        mSearchView.setOnQueryTextListener(this);
         return true;
     }
     /* Called whenever we call invalidateOptionsMenu() */
@@ -122,7 +118,6 @@ public class DrawerActivity extends ActionBarActivity implements AbsListView.OnS
     public boolean onPrepareOptionsMenu(Menu menu) {
         // If the nav drawer is open, hide action items related to the content view
         boolean drawerOpen = mDrawerLayout.isDrawerOpen(mDrawerList);
-        menu.findItem(R.id.action_settings).setVisible(!drawerOpen);
         return super.onPrepareOptionsMenu(menu);
     }
 
@@ -152,15 +147,6 @@ public class DrawerActivity extends ActionBarActivity implements AbsListView.OnS
     }
 
 
-    @Override
-    public boolean onQueryTextSubmit(String query) {
-        return false;
-    }
-
-    @Override
-    public boolean onQueryTextChange(String newText) {
-        return false;
-    }
 
 
     @Override
@@ -220,6 +206,12 @@ public class DrawerActivity extends ActionBarActivity implements AbsListView.OnS
         // ActionBarDrawerToggle will take care of this.
         if (mDrawerToggle.onOptionsItemSelected(item)) {
             return true;
+        }
+        switch (item.getItemId()) {
+            case R.id.action_search:
+                Intent intent = new Intent(this,SearchActivity.class);
+                startActivity(intent);
+                return(true);
         }
         // Handle action buttons
         return super.onOptionsItemSelected(item);

@@ -7,8 +7,7 @@
         android:icon="@drawable/ic_launcher"
         android:label="@string/app_name"
         android:theme="@style/Theme.AppCompat.Light" >
-        <activity
-            android:name="com.pricetag.app.MainActivity"
+        <activity android:name="com.pricetag.app.MainActivity"
             android:configChanges="orientation|screenSize"
             android:label="@string/app_name" >
             <intent-filter>
@@ -22,6 +21,8 @@
         <activity android:name="com.pricetag.app.DrawerSpinnerActivity"
             android:configChanges="orientation|screenSize"/>
         <activity android:name="com.pricetag.app.PriceListActivity"
+            android:configChanges="orientation|screenSize"/>
+        <activity android:name="com.pricetag.app.SearchActivity"
             android:configChanges="orientation|screenSize"/>
     </application>
 
