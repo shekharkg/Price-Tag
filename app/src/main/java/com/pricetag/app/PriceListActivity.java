@@ -162,6 +162,7 @@ public class PriceListActivity extends ActionBarActivity implements AbsListView.
         return true;
     }
     private void selectItem(int position) {
+        start = 1;
         minus = 0;
         // update the main content by replacing fragments
         baseUrl = mySpinnerUrls[position];
@@ -194,12 +195,11 @@ public class PriceListActivity extends ActionBarActivity implements AbsListView.
         }
     }
     private void onLoadMoreItems() {
+        int replace = start;
         start += 1;
-        int replace;
         if(start==2){
             baseUrl = baseUrl+"?page="+start+"&resultonly=true";
         }else{
-            replace = start-1;
             baseUrl = baseUrl.replace("?page="+replace,"?page="+start);
         }
         new HttpAsyncTask().execute(baseUrl);
@@ -258,23 +258,40 @@ public class PriceListActivity extends ActionBarActivity implements AbsListView.
 
             if (doc != null && connec != null && (connec.getNetworkInfo(1).getState() == NetworkInfo.State.CONNECTED) ||(doc != null && (connec.getNetworkInfo(0).getState() == NetworkInfo.State.CONNECTED))) {
                 //You are connected, do something online.
-                Elements title_img = doc.select("[height=115]");
-                Elements price = doc.select("div[class=price]");
-                for(int i=minus; i<price.size(); i++){
-                    productTitle = title_img.get(i).attr("abs:alt").split("pricedekho.com/")[1];
-                    productTitle = productTitle.replace(" Price","");
-                    productPrice = price.get(i).text();
-                    productPrice = productPrice.replace("Starts at","");
-                    productImage = title_img.get(i).attr("abs:src");
-                    if(productImage.contains("pd.jpg") == true){
-                        productImage = title_img.get(i).attr("abs:data-original");
+                if((baseUrl.contains("cars.pricedekho.com") || baseUrl.contains("bikes.pricedekho.com")) == true){
+                    Elements title_img = doc.select("[class=link] ");
+                    for (int i = minus; i < title_img.size(); i++) {
+                        productTitle = title_img.get(i).attr("abs:alt").split("pricedekho.com/")[1];
+                        productTitle = productTitle.replace(" Price", "");
+                        productImage = title_img.get(i).attr("abs:src");
+                        if (productImage.contains("pd.jpg") == true) {
+                            productImage = title_img.get(i).attr("abs:data-original");
+                        }
+                        myAdapter.add(new ProductData(productTitle, productImage, "0000000"));
                     }
-                    myAdapter.add(new ProductData(productTitle, productImage, productPrice));
+                }
+                else {
+                    Elements title_img = doc.select("[height=115]");
+                    Elements price = doc.select("div[class=price]");
+                    for (int i = minus; i < price.size(); i++) {
+                        productTitle = title_img.get(i).attr("abs:alt").split("pricedekho.com/")[1];
+                        productTitle = productTitle.replace(" Price", "");
+                        productPrice = price.get(i).text();
+                        productPrice = productPrice.replace("Starts at", "");
+                        productImage = title_img.get(i).attr("abs:src");
+                        if (productImage.contains("pd.jpg") == true) {
+                            productImage = title_img.get(i).attr("abs:data-original");
+                        }
+                        myAdapter.add(new ProductData(productTitle, productImage, productPrice));
+                    }
                 }
 
                 myAdapter.notifyDataSetChanged();
                 myHasRequestedMore = false;
                 txtFooterTitle.setText("");
+                if(myAdapter.getCount()==0){
+                    txtFooterTitle.setText("No item found");
+                }
                 minus = 3;
             }else if (connec.getNetworkInfo(0).getState() == NetworkInfo.State.DISCONNECTED ||  connec.getNetworkInfo(1).getState() == NetworkInfo.State.DISCONNECTED ) {
                 //Not connected.
