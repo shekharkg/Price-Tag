@@ -55,6 +55,7 @@ public class DrawerSpinnerActivity extends ActionBarActivity implements AbsListV
     private int positionValue;
     String productTitle, productImage, productUrl;
     private static final String STATE_SELECTED_NAVIGATION_ITEM = "selected_navigation_item";
+    private int spinnerCount=0;
 
     @Override
     protected void onCreate(Bundle savedInstanceStateCategory) {
@@ -84,6 +85,7 @@ public class DrawerSpinnerActivity extends ActionBarActivity implements AbsListV
                 new ArrayAdapter<String>(
                         actionBar.getThemedContext(),android.R.layout.simple_list_item_1,
                         android.R.id.text1, mySpinnerTitles), this);
+        actionBar.setSelectedNavigationItem(positionValue);
 
         // set a custom shadow that overlays the main content when the drawer opens
         mDrawerLayout.setDrawerShadow(R.drawable.drawer_shadow, GravityCompat.START);
@@ -153,7 +155,25 @@ public class DrawerSpinnerActivity extends ActionBarActivity implements AbsListV
     }
     @Override
     public boolean onNavigationItemSelected(int i, long l) {
-        //selectItem(i);
+        if(spinnerCount == 0){
+            selectItem(i);
+            spinnerCount = 5;
+        }
+        else if(mySpinnerUrls[i].contains("-store") != true){
+                Intent setIntentProdId = new Intent(this, PriceListActivity.class);
+                setIntentProdId.putExtra("shownToDrawer",myDrawerTitles);
+                setIntentProdId.putExtra("shownToDrawerUrl",myDrawerUrls);
+                setIntentProdId.putExtra("shownToSpinner",mySpinnerTitles);
+                setIntentProdId.putExtra("shownToSpinnerUrl",mySpinnerUrls);
+                setIntentProdId.putExtra("baseUrl", mySpinnerUrls[i]);
+                setIntentProdId.putExtra("selectPosition", i);
+                finish();
+                startActivity(setIntentProdId);
+        }
+        else{
+              selectItem(i);
+        }
+
         return true;
     }
     private void selectItem(int position) {
