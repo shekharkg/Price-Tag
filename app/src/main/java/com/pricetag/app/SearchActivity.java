@@ -50,7 +50,7 @@ public class SearchActivity extends ActionBarActivity implements AbsListView.OnS
     @Override
     protected void onCreate(Bundle savedInstanceStateCategory) {
         super.onCreate(savedInstanceStateCategory);
-        setContentView(R.layout.drawer_layout);
+        setContentView(R.layout.activity_search);
         searchUrl = getResources().getString(R.string.search_url);
         try {
             searchUrl = URLDecoder.decode(searchUrl,"UTF-8");

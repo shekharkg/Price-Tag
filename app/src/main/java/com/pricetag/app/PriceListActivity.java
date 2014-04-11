@@ -280,6 +280,7 @@ public class PriceListActivity extends ActionBarActivity implements AbsListView.
                 //You are connected, do something online.
                 if((baseUrl.contains("cars.pricedekho.com") || baseUrl.contains("bikes.pricedekho.com")) == true){
                     Elements title_img = doc.select("[class=link] ");
+                    Elements price = doc.select("[class=listdetails] > ul");
                     for (int i = minus; i < title_img.size(); i++) {
                         productTitle = title_img.get(i).attr("abs:alt").split("pricedekho.com/")[1];
                         productTitle = productTitle.replace(" Price", "");
@@ -287,7 +288,8 @@ public class PriceListActivity extends ActionBarActivity implements AbsListView.
                         if (productImage.contains("pd.jpg") == true) {
                             productImage = title_img.get(i).attr("abs:data-original");
                         }
-                        myAdapter.add(new ProductData(productTitle, productImage, "0000000"));
+                        productPrice = price.get(i).select("li :nth-child(2)").get(0).text();
+                        myAdapter.add(new ProductData(productTitle, productImage, productPrice));
                     }
                 }
                 else {
