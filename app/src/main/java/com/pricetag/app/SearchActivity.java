@@ -84,7 +84,7 @@ public class SearchActivity extends ActionBarActivity implements AbsListView.OnS
 
     @Override
     public boolean onQueryTextSubmit(String query) {
-        searchValue = query;
+        searchValue = query.replace(" ","+");
         selectItem(0);
         return true;
     }
