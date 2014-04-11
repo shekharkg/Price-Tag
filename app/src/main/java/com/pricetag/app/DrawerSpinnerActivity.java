@@ -39,7 +39,7 @@ import java.io.IOException;
  */
 public class DrawerSpinnerActivity extends ActionBarActivity implements AbsListView.OnScrollListener, AbsListView.OnItemClickListener, ActionBar.OnNavigationListener {
 
-    private static final String TAG = "MainActivity";
+    private static final String TAG = "DrawerSpinnerActivity";
     private static StaggeredGridView myGridView;
     private static GridAdapter myAdapter;
     private static LayoutInflater layoutInflater;

@@ -22,7 +22,7 @@ import java.util.Random;
  */
 public class GridAdapterPriceList extends ArrayAdapter<ProductData> {
 
-    private static final String TAG = "GridAdapter";
+    private static final String TAG = "GridAdapterPriceList";
     static class ViewHolder {
         DynamicHeightTextView txtLineOne;
         TextView txtPrice;

@@ -38,7 +38,7 @@ import java.io.IOException;
  */
 public class DrawerActivity extends ActionBarActivity implements AbsListView.OnScrollListener, AbsListView.OnItemClickListener{
 
-    private static final String TAG = "MainActivity";
+    private static final String TAG = "DrawerActivity";
     private static StaggeredGridView myGridView;
     private static GridAdapter myAdapter;
     private static LayoutInflater layoutInflater;

@@ -21,7 +21,7 @@ import java.util.Random;
  */
 public class GridAdapterMainActivity extends ArrayAdapter<ProductData> {
 
-    private static final String TAG = "GridAdapter";
+    private static final String TAG = "GridAdapterMainActivity";
     static class ViewHolder {
         DynamicHeightTextView txtLineOne;
         Button btnGo;

@@ -29,14 +29,13 @@ import org.jsoup.select.Elements;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
-import java.util.ArrayList;
 
 /**
  * Created by SKG on 10-Apr-14.
  */
 public class SearchActivity extends ActionBarActivity implements AbsListView.OnScrollListener, AbsListView.OnItemClickListener, SearchView.OnQueryTextListener {
 
-    private static final String TAG = "MainActivity";
+    private static final String TAG = "Searchctivity";
     private static StaggeredGridView myGridView;
     private static GridAdapterPriceList myAdapter;
     private static LayoutInflater layoutInflater;
@@ -47,7 +46,6 @@ public class SearchActivity extends ActionBarActivity implements AbsListView.OnS
     String productTitle, productImage, productPrice;
     private int page;
     private String searchValue, baseUrl,searchUrl,baseUrlWdOutPage;
-    ArrayList<String> items=new ArrayList<String>();
 
     @Override
     protected void onCreate(Bundle savedInstanceStateCategory) {

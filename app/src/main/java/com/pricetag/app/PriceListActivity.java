@@ -39,7 +39,7 @@ import java.io.IOException;
  */
 public class PriceListActivity extends ActionBarActivity implements AbsListView.OnScrollListener, AbsListView.OnItemClickListener, ActionBar.OnNavigationListener {
 
-    private static final String TAG = "MainActivity";
+    private static final String TAG = "PriceListActivity";
     private static StaggeredGridView myGridView;
     private static GridAdapterPriceList myAdapter;
     private static LayoutInflater layoutInflater;
