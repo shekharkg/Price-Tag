@@ -118,7 +118,6 @@ public class PriceListActivity extends ActionBarActivity implements AbsListView.
             }
         };
         mDrawerLayout.setDrawerListener(mDrawerToggle);
-        selectItem(positionValue);
     }
 
     @Override
@@ -260,8 +259,8 @@ public class PriceListActivity extends ActionBarActivity implements AbsListView.
             if (doc != null && connec != null && (connec.getNetworkInfo(1).getState() == NetworkInfo.State.CONNECTED) ||(doc != null && (connec.getNetworkInfo(0).getState() == NetworkInfo.State.CONNECTED))) {
                 //You are connected, do something online.
                 Elements title_img = doc.select("[height=115]");
-                Elements price = doc.select("[class=price]");
-                for(int i=minus; i<title_img.size(); i++){
+                Elements price = doc.select("div[class=price]");
+                for(int i=minus; i<price.size(); i++){
                     productTitle = title_img.get(i).attr("abs:alt").split("pricedekho.com/")[1];
                     productTitle = productTitle.replace(" Price","");
                     productPrice = price.get(i).text();
@@ -276,7 +275,7 @@ public class PriceListActivity extends ActionBarActivity implements AbsListView.
                 myAdapter.notifyDataSetChanged();
                 myHasRequestedMore = false;
                 txtFooterTitle.setText("");
-                minus = 5;
+                minus = 3;
             }else if (connec.getNetworkInfo(0).getState() == NetworkInfo.State.DISCONNECTED ||  connec.getNetworkInfo(1).getState() == NetworkInfo.State.DISCONNECTED ) {
                 //Not connected.
                 txtFooterTitle.setText("Connect to Internet...");

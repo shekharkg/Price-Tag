@@ -4,6 +4,8 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.AbsListView;
 import android.widget.AdapterView;
@@ -45,6 +47,23 @@ public class MainActivity extends ActionBarActivity implements AbsListView.OnIte
 
     }
 
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.main, menu);
+        return true;
+    }
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.action_search:
+                Intent intent = new Intent(this,SearchActivity.class);
+                startActivity(intent);
+                return(true);
+        }
+        // Handle action buttons
+        return super.onOptionsItemSelected(item);
+
+    }
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
         if(position != myAdapter.getCount()) {

@@ -114,7 +114,6 @@ public class DrawerSpinnerActivity extends ActionBarActivity implements AbsListV
             }
         };
         mDrawerLayout.setDrawerListener(mDrawerToggle);
-        selectItem(positionValue);
     }
 
     @Override

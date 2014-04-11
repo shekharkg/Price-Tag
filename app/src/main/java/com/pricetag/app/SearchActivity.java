@@ -78,6 +78,7 @@ public class SearchActivity extends ActionBarActivity implements AbsListView.OnS
         MenuItem searchItem = menu.findItem(R.id.action_search);
         mSearchView = (SearchView) MenuItemCompat.getActionView(searchItem);
         mSearchView.setOnQueryTextListener(this);
+        mSearchView.setIconified(false);
         return true;
     }
 
@@ -158,21 +159,26 @@ public class SearchActivity extends ActionBarActivity implements AbsListView.OnS
                 //You are connected, do something online.
                 Elements title_img = doc.select("[height=130]");
                 Elements price = doc.select("[class=price]");
-                for(int i=0; i<price.size(); i++){
-                    productTitle = title_img.get(i).attr("abs:alt").split("search/")[1];
-                    productTitle = productTitle.replace(" Price","");
-                    productPrice = price.get(i).text();
-                    productPrice = productPrice.replace("Starts at","");
-                    productImage = title_img.get(i).attr("abs:src");
-                    if(productImage.contains("pd.jpg") == true){
-                        productImage = title_img.get(i).attr("abs:data-original");
+                try {
+                    for (int i = 0; i < price.size(); i++) {
+                        productTitle = title_img.get(i).attr("abs:alt").split("search/")[1];
+                        productTitle = productTitle.replace(" Price", "");
+                        productPrice = price.get(i).text();
+                        productPrice = productPrice.replace("Starts at", "");
+                        productImage = title_img.get(i).attr("abs:src");
+                        if (productImage.contains("pd.jpg") == true) {
+                            productImage = title_img.get(i).attr("abs:data-original");
+                        }
+                        myAdapter.add(new ProductData(productTitle, productImage, productPrice));
                     }
-                    myAdapter.add(new ProductData(productTitle, productImage, productPrice));
+                }catch(Exception e){
                 }
-
                 myAdapter.notifyDataSetChanged();
                 myHasRequestedMore = false;
                 txtFooterTitle.setText("");
+                if(myAdapter.getCount()==0){
+                    txtFooterTitle.setText("No result found");
+                }
             }else if (connec.getNetworkInfo(0).getState() == NetworkInfo.State.DISCONNECTED ||  connec.getNetworkInfo(1).getState() == NetworkInfo.State.DISCONNECTED ) {
                 //Not connected.
                 txtFooterTitle.setText("Connect to Internet...");
