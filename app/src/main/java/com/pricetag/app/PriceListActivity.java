@@ -4,6 +4,7 @@ import android.app.Fragment;
 import android.app.FragmentManager;
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.Configuration;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.AsyncTask;
@@ -232,6 +233,25 @@ public class PriceListActivity extends ActionBarActivity implements AbsListView.
 
     }
 
+    /**
+     * When using the ActionBarDrawerToggle, you must call it during
+     * onPostCreate() and onConfigurationChanged()...
+     */
+    @Override
+    protected void onPostCreate(Bundle savedInstanceState) {
+        super.onPostCreate(savedInstanceState);
+        // Sync the toggle state after onRestoreInstanceState has occurred.
+        mDrawerToggle.syncState();
+    }
+
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+        // Pass any configuration change to the drawer toggls
+        mDrawerToggle.onConfigurationChanged(newConfig);
+    }
+
+
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         // The action bar home/up action should open or close the drawer.
@@ -274,13 +294,11 @@ public class PriceListActivity extends ActionBarActivity implements AbsListView.
         @Override
         protected void onPostExecute(Document doc) {
             ConnectivityManager connec = (ConnectivityManager)getSystemService(Context.CONNECTIVITY_SERVICE);
-
-
             if (doc != null && connec != null && (connec.getNetworkInfo(1).getState() == NetworkInfo.State.CONNECTED) ||(doc != null && (connec.getNetworkInfo(0).getState() == NetworkInfo.State.CONNECTED))) {
                 //You are connected, do something online.
                 if((baseUrl.contains("cars.pricedekho.com") || baseUrl.contains("bikes.pricedekho.com")) == true){
                     Elements title_img = doc.select("[class=link] ");
-                    Elements price = doc.select("[class=listdetails] > ul");
+                    Elements price = doc.select("[class=listdetails] > ul > li:nth-child(1) > :nth-child(2)");
                     for (int i = minus; i < title_img.size(); i++) {
                         productTitle = title_img.get(i).attr("abs:alt").split("pricedekho.com/")[1];
                         productTitle = productTitle.replace(" Price", "");
@@ -288,7 +306,7 @@ public class PriceListActivity extends ActionBarActivity implements AbsListView.
                         if (productImage.contains("pd.jpg") == true) {
                             productImage = title_img.get(i).attr("abs:data-original");
                         }
-                        productPrice = price.get(i).select("li :nth-child(2)").get(0).text();
+                        productPrice = price.get(i).text();
                         myAdapter.add(new ProductData(productTitle, productImage, productPrice));
                     }
                 }
