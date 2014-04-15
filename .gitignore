@@ -5,3 +5,9 @@
 .idea/
 app/app.iml
 app/src/main/res/values/url.xml
+app/src/main/res/drawable-hdpi/Thumbs.db
+app/src/main/res/drawable-mdpi/Thumbs.db
+app/src/main/res/drawable-xhdpi/Thumbs.db
+app/src/main/res/drawable-xxhdpi/Thumbs.db
+app/src/main/res/drawable-xxxhdpi/Thumbs.db
+app/src/main/res/drawable/Thumbs.db
