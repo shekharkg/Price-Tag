@@ -1,11 +1,22 @@
 package com.pricetag.app;
 
+import android.content.Context;
 import android.content.Intent;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
+import android.util.Log;
+import android.view.View;
+import android.view.ViewGroup;
 import android.webkit.WebView;
+import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.ListAdapter;
+import android.widget.ListView;
+import android.widget.ScrollView;
 import android.widget.TextView;
 
 import com.koushikdutta.ion.Ion;
@@ -21,24 +32,29 @@ public class ProductDetailsActivity extends ActionBarActivity {
     private String prodID,prodImg;
     private String baseUrl;
     ImageView imageView;
-    TextView textTitle;
+    TextView textTitle, textPriceMin;
     WebView textDescription;
-    private String sellerImage, sellerTitle, sellerPrice, sellerRating, sellerUrl;
+    private String[] sellerImage, sellerTitle, sellerPrice, sellerUrl;
+    ListView sellerView;
+    ScrollView scrollView;
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_product_details);
         Intent getProductId = getIntent();
         if (getProductId != null) {
-           prodImg = getProductId.getStringExtra("productID");
+            prodImg = getProductId.getStringExtra("productID");
         }
         String[] tokens = prodImg.split("/");
         prodID = tokens[tokens.length-2];
+
+        scrollView = (ScrollView) findViewById(R.id.scrollView);
         baseUrl = getResources().getString(R.string.api_url)+prodID;
         imageView = (ImageView) findViewById(R.id.imageView);
         textTitle = (TextView) findViewById(R.id.prod_title);
+        textPriceMin = (TextView) findViewById(R.id.min_price);
         textDescription = (WebView) findViewById(R.id.prod_desc);
-
+        sellerView = (ListView) findViewById(R.id.seller_list);
         new HttpAsyncTask().execute(baseUrl);
 
     }
@@ -58,32 +74,86 @@ public class ProductDetailsActivity extends ActionBarActivity {
 
         @Override
         protected void onPostExecute(String result) {
-            try {
-                JSONObject json = new JSONObject(result);
-                JSONObject products = json.getJSONObject("products");
-                setTitle(products.getString("name"));
-                Ion.with(imageView).placeholder(R.drawable.product).error(R.drawable.product).load(products.getString("large_image"));
-                textTitle.setText(products.getString("name"));
-                textDescription.getSettings().setJavaScriptEnabled(true);
-                textDescription.loadDataWithBaseURL("", products.getString("desc"), "text/html", "UTF-8", "");
+            ConnectivityManager connec = (ConnectivityManager)getSystemService(Context.CONNECTIVITY_SERVICE);
+            if ( connec != null && (connec.getNetworkInfo(1).getState() == NetworkInfo.State.CONNECTED) ||((connec.getNetworkInfo(0).getState() == NetworkInfo.State.CONNECTED))) {
+                //You are connected, do something online.
+                try {
+                    JSONObject json = new JSONObject(result);
+                    JSONObject products = json.getJSONObject("products");
+                    setTitle(products.getString("name"));
+                    Ion.with(imageView).placeholder(R.drawable.product).error(R.drawable.product).load(products.getString("large_image"));
+                    textTitle.setText(products.getString("name"));
+                    textDescription.getSettings().setJavaScriptEnabled(true);
+                    textDescription.loadDataWithBaseURL("", products.getString("desc"), "text/html", "UTF-8", "");
+                    textPriceMin.setText("Rs." + products.getString("price"));
+                    textPriceMin.setVisibility(View.VISIBLE);
 
-                JSONObject suppliers = json.getJSONObject("suppliers");
-                JSONArray supplier_details = suppliers.getJSONArray("supplier_details");
-                for (int i = 0; i < supplier_details.length(); i++) {
-                   sellerImage = supplier_details.getJSONObject(i).getString("store_image");
-                   sellerTitle = supplier_details.getJSONObject(i).getString("name");
-                   sellerPrice = supplier_details.getJSONObject(i).getString("price");
-                   sellerRating = supplier_details.getJSONObject(i).getString("supplier_type");
-                   sellerUrl  = supplier_details.getJSONObject(i).getString("url");
+                    if(products.getString("desc") == "null"){
+                        textDescription.loadDataWithBaseURL("", null, "text/html", "UTF-8", "");
+                        textDescription.setVisibility(View.INVISIBLE);
+                    }
 
-                   textTitle.setText(sellerImage + "\n" + sellerTitle + "\n" + sellerPrice + "\n" + sellerRating + "\n" +sellerUrl);
+                    JSONObject suppliers = json.getJSONObject("suppliers");
+                    JSONArray supplier_details = suppliers.getJSONArray("supplier_details");
+                    sellerImage = new String[supplier_details.length()];
+                    sellerTitle = new String[supplier_details.length()];
+                    sellerPrice = new String[supplier_details.length()];
+                    sellerUrl = new String[supplier_details.length()];
+                    for (int i = 0; i < supplier_details.length(); i++) {
+                        sellerImage[i] = supplier_details.getJSONObject(i).getString("store_image");
+                        sellerTitle[i] = supplier_details.getJSONObject(i).getString("name");
+                        sellerPrice[i] = "Rs." + supplier_details.getJSONObject(i).getString("price");
+                        sellerUrl[i] = supplier_details.getJSONObject(i).getString("url");
+                    }
+
+                    // ArrayAdapter<String> adapter = new ArrayAdapter<String>(ProductDetailsActivity.this,android.R.layout.simple_list_item_1,sellerTitle);
+                    ListAdapterClass adapter = new ListAdapterClass(ProductDetailsActivity.this, sellerImage, sellerTitle, sellerPrice, sellerUrl);
+                    sellerView.setAdapter(adapter);
+                    Helper.getListViewSize(sellerView);
+
+                } catch (JSONException e) {
+                    // TODO Auto-generated catch block
+                    e.printStackTrace();
                 }
-
-            }catch (JSONException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
+            }else if (connec.getNetworkInfo(0).getState() == NetworkInfo.State.DISCONNECTED ||  connec.getNetworkInfo(1).getState() == NetworkInfo.State.DISCONNECTED ) {
+                //Not connected.
+                imageView.setVisibility(View.INVISIBLE);
+                imageView.setMaxHeight(0);
+                textTitle.setText("Connect to Internet...");
             }
         }
-
+    }
+    public void buy(View v){
+        Button buttonBuy;
+        buttonBuy = (Button) v.findViewById(R.id.button_buy);
+        String position = buttonBuy.getTag().toString();
+        int i = Integer.parseInt( position );
+        Intent externalActivity = new Intent(Intent.ACTION_VIEW);
+        externalActivity.setData(Uri.parse(sellerUrl[i]));
+        startActivity(externalActivity);
+    }
+    public static class Helper {
+        public static void getListViewSize(ListView myListView) {
+            ListAdapter myListAdapter = myListView.getAdapter();
+            if (myListAdapter == null) {
+                //do nothing return null
+                return;
+            }
+            //set listAdapter in loop for getting final size
+            int totalHeight = 0;
+            for (int size = 0; size < myListAdapter.getCount(); size++) {
+                View listItem = myListAdapter.getView(size, null, myListView);
+                listItem.measure(0, 0);
+                totalHeight += listItem.getMeasuredHeight();
+            }
+            //setting listview item in adapter
+            ViewGroup.LayoutParams params = myListView.getLayoutParams();
+            params.height = totalHeight + (myListView.getDividerHeight() * (myListAdapter.getCount() -1 ));
+            myListView.setLayoutParams(params);
+            // print height of adapter on log
+            Log.i("height of listItem:", String.valueOf(totalHeight));
+        }
     }
 }
+
+

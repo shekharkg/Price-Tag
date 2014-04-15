@@ -2,6 +2,7 @@
     <ScrollView
         xmlns:android="http://schemas.android.com/apk/res/android"
         android:layout_height="match_parent"
+        android:id="@+id/scrollView"
         android:layout_width="match_parent">
 
         <LinearLayout
@@ -10,13 +11,35 @@
             android:layout_height="fill_parent"
             android:weightSum="1">
 
-            <ImageView
-                android:id="@+id/imageView"
+            <FrameLayout
+                android:orientation="horizontal"
+                android:id="@+id/panel_content"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:adjustViewBounds="true"
-                android:scaleType="centerCrop"
-                android:src="@drawable/product" />
+                android:background="@color/white"
+                android:descendantFocusability="blocksDescendants">
+
+                <ImageView
+                    android:id="@+id/imageView"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:adjustViewBounds="true"
+                    android:scaleType="centerCrop"
+                    android:src="@drawable/product" />
+
+                <TextView
+                    android:id="@+id/min_price"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="20dp"
+                    android:onClick="buy"
+                    android:padding="5dp"
+                    android:visibility="invisible"
+                    android:layout_gravity="top|right"
+                    android:background="@color/black"
+                    android:textColor="@color/white"/>
+
+            </FrameLayout>
 
             <TextView
                 android:id="@+id/prod_title"
@@ -37,6 +60,14 @@
                 android:background="@color/white"
                 android:gravity="center_horizontal"
                 android:textAppearance="@android:style/TextAppearance.Medium" />
+
+            <ListView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@color/white"
+                android:layout_margin="15dp"
+                android:gravity="center_horizontal"
+                android:id="@+id/seller_list"/>
 
         </LinearLayout>
 

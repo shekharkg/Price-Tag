@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent" >
+
+    <ImageView
+        android:id="@+id/seller_image"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentTop="true"
+        android:layout_margin="10dp"
+        android:src="@drawable/ic_launcher" />
+
+    <TextView
+        android:id="@+id/seller_price"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_alignTop="@+id/seller_image"
+        android:layout_toRightOf="@+id/seller_image"
+        android:text="Price"
+        android:textAppearance="?android:attr/textAppearanceLarge" />
+
+    <TextView
+        android:id="@+id/seller_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Seller"
+        android:layout_below="@+id/seller_price"
+        android:layout_toRightOf="@+id/seller_image"
+        android:layout_alignRight="@+id/button"
+        android:layout_alignEnd="@+id/button" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Buy"
+        android:onClick="buy"
+        android:id="@+id/button_buy"
+        android:background="@color/black"
+        android:textColor="@color/white"
+        android:layout_margin="5dp"
+        android:layout_alignBottom="@+id/seller_title"
+        android:layout_alignRight="@+id/seller_price"
+        android:layout_alignEnd="@+id/seller_price" />
+
+</RelativeLayout>
