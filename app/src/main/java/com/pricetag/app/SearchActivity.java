@@ -3,6 +3,7 @@ package com.pricetag.app;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.content.Context;
+import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.AsyncTask;
@@ -117,7 +118,12 @@ public class SearchActivity extends ActionBarActivity implements AbsListView.OnS
 
     @Override
     public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
-
+        if(position != myAdapter.getCount()){
+            ProductData productID= myAdapter.getItem(position);
+            Intent intent = new Intent(this, ProductDetailsActivity.class);
+            intent.putExtra("productID", productID.getImage());
+            startActivity(intent);
+        }
     }
 
     @Override
