@@ -24,13 +24,18 @@ import com.koushikdutta.ion.Ion;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.select.Elements;
+
+import java.io.IOException;
 
 /**
  * Created by SKG on 14-Apr-14.
  */
 public class ProductDetailsActivity extends ActionBarActivity {
     private String prodID,prodImg;
-    private String baseUrl;
+    private String baseUrl, sellerSiteUrl;
     ImageView imageView;
     TextView textTitle, textPriceMin;
     WebView textDescription;
@@ -127,10 +132,40 @@ public class ProductDetailsActivity extends ActionBarActivity {
         Button buttonBuy;
         buttonBuy = (Button) v.findViewById(R.id.button_buy);
         String position = buttonBuy.getTag().toString();
-        int i = Integer.parseInt( position );
-        Intent externalActivity = new Intent(Intent.ACTION_VIEW);
-        externalActivity.setData(Uri.parse(sellerUrl[i]));
-        startActivity(externalActivity);
+        int i = Integer.parseInt(position);
+        sellerSiteUrl = sellerUrl[i];
+        new SellerUrlParser().execute(sellerSiteUrl);
+    }
+
+    class SellerUrlParser extends AsyncTask<String, Void, Document> {
+
+        @Override
+        protected void onPreExecute() {
+            // TODO Auto-generated method stub
+            super.onPreExecute();
+        }
+
+        @Override
+        protected Document doInBackground(String... urls) {
+            Document doc = null;
+            try {
+                doc = Jsoup.connect(urls[0]).userAgent("Mozilla").get();
+            } catch (IOException e) {
+                e.printStackTrace();
+                return doc;
+            }
+            return doc;
+        }
+
+        @Override
+        protected void onPostExecute(Document doc) {
+            Elements title_url = doc.select("a");
+            String gotoUrl = title_url.attr("abs:href");
+
+            Intent externalActivity = new Intent(Intent.ACTION_VIEW);
+            externalActivity.setData(Uri.parse(gotoUrl));
+            startActivity(externalActivity);
+        }
     }
     public static class Helper {
         public static void getListViewSize(ListView myListView) {
