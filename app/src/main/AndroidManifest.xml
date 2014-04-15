@@ -24,7 +24,9 @@
             android:configChanges="orientation|screenSize"/>
         <activity android:name="com.pricetag.app.SearchActivity"
             android:configChanges="orientation|screenSize"/>
-    </application>
+        <activity android:name="com.pricetag.app.ProductDetailsActivity"
+            android:configChanges="orientation|screenSize"/>
+</application>
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />

@@ -229,7 +229,12 @@ public class PriceListActivity extends ActionBarActivity implements AbsListView.
 
     @Override
     public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
-
+        if(position != myAdapter.getCount()){
+            ProductData productID= myAdapter.getItem(position);
+            Intent intent = new Intent(this, ProductDetailsActivity.class);
+            intent.putExtra("productID", productID.getImage());
+            startActivity(intent);
+        }
 
     }
 
