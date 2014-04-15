@@ -41,7 +41,6 @@ public class ProductDetailsActivity extends ActionBarActivity {
     WebView textDescription;
     private String[] sellerImage, sellerTitle, sellerPrice, sellerUrl;
     ListView sellerView;
-    ScrollView scrollView;
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -53,7 +52,6 @@ public class ProductDetailsActivity extends ActionBarActivity {
         String[] tokens = prodImg.split("/");
         prodID = tokens[tokens.length-2];
 
-        scrollView = (ScrollView) findViewById(R.id.scrollView);
         baseUrl = getResources().getString(R.string.api_url)+prodID;
         imageView = (ImageView) findViewById(R.id.imageView);
         textTitle = (TextView) findViewById(R.id.prod_title);
@@ -115,6 +113,14 @@ public class ProductDetailsActivity extends ActionBarActivity {
                     ListAdapterClass adapter = new ListAdapterClass(ProductDetailsActivity.this, sellerImage, sellerTitle, sellerPrice, sellerUrl);
                     sellerView.setAdapter(adapter);
                     Helper.getListViewSize(sellerView);
+
+                    final ScrollView scrollview = ((ScrollView) findViewById(R.id.scrollView));
+                    scrollview.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            scrollview.fullScroll(ScrollView.FOCUS_UP);
+                        }
+                    });
 
                 } catch (JSONException e) {
                     // TODO Auto-generated catch block
