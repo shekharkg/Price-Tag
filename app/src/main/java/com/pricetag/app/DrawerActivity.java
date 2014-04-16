@@ -13,6 +13,7 @@ import android.support.v4.app.ActionBarDrawerToggle;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarActivity;
+import android.support.v7.widget.ShareActionProvider;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -25,13 +26,10 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.SearchView;
 import android.widget.TextView;
-
 import com.etsy.android.grid.StaggeredGridView;
-
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.select.Elements;
-
 import java.io.IOException;
 
 /**
@@ -41,6 +39,7 @@ public class DrawerActivity extends ActionBarActivity implements AbsListView.OnS
 
     private static final String TAG = "DrawerActivity";
     private static StaggeredGridView myGridView;
+    private static GridAdapterMainActivity myAdapterMain;
     private static GridAdapter myAdapter;
     private static LayoutInflater layoutInflater;
     private static View footer;
@@ -56,24 +55,25 @@ public class DrawerActivity extends ActionBarActivity implements AbsListView.OnS
     private String baseUrl;
     private int positionValue;
     String productTitle, productImage, productUrl;
+    int loadFirstTime, backCheck;
+    private View rootView;
+    private ShareActionProvider myShareActionProvider;
 
     @Override
     protected void onCreate(Bundle savedInstanceStateCategory) {
         super.onCreate(savedInstanceStateCategory);
         setContentView(R.layout.drawer_layout);
 
-        Intent getIntentFromMainActivity = getIntent();
-        if (getIntentFromMainActivity != null) {
-            baseUrl = getIntentFromMainActivity.getStringExtra("baseUrl");
-            myDrawerTitles = getIntentFromMainActivity.getStringArrayExtra("shownToDrawer");
-            myDrawerUrls = getIntentFromMainActivity.getStringArrayExtra("shownToDrawerUrl");
-            positionValue = getIntentFromMainActivity.getIntExtra("selectPosition",0);
-        }
+
+        myDrawerTitles = getResources().getStringArray(R.array.drawer_menu);
+        myDrawerUrls = getResources().getStringArray(R.array.drawer_menu_url);
+        positionValue = 0;
+        baseUrl = myDrawerTitles[positionValue];
 
         mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
         mDrawerList = (ListView) findViewById(R.id.left_drawer);
-
-
+        loadFirstTime = 1;
+        backCheck = 1;
 
         // set a custom shadow that overlays the main content when the drawer opens
         mDrawerLayout.setDrawerShadow(R.drawable.drawer_shadow, GravityCompat.START);
@@ -107,7 +107,16 @@ public class DrawerActivity extends ActionBarActivity implements AbsListView.OnS
 
             selectItem(positionValue);
     }
-
+    @Override
+    public void onBackPressed() {
+        if (backCheck == 1) {
+            loadFirstTime = 1;
+            backCheck = 5;
+            selectItem(positionValue);
+        } else {
+            super.onBackPressed();
+        }
+    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -145,6 +154,8 @@ public class DrawerActivity extends ActionBarActivity implements AbsListView.OnS
         // update selected item and title, then close the drawer
         mDrawerList.setItemChecked(position, true);
         mDrawerLayout.closeDrawer(mDrawerList);
+        if(loadFirstTime == 1)
+            mDrawerList.setItemChecked(position, false);
     }
 
 
@@ -179,42 +190,47 @@ public class DrawerActivity extends ActionBarActivity implements AbsListView.OnS
 
     @Override
     public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
-        if(position != myAdapter.getCount()) {
-            ProductData productUrl = myAdapter.getItem(position);
-            String[] shownToSpinnerUrl = new String[myAdapter.getCount()];
-            String[] shownToSpinner = new String[myAdapter.getCount()];
-            if(productUrl.getUrl().contains("-store") == true){
-                for(int i=0; i<myAdapter.getCount();i++){
-                    ProductData productDetails = myAdapter.getItem(i);
-                    shownToSpinner[i] = productDetails.getTitle();
-                    shownToSpinnerUrl[i] = productDetails.getUrl();
+
+        if(rootView.getTag().toString() == "myAdapter") {
+            if (position != myAdapter.getCount()) {
+                ProductData productUrl = myAdapter.getItem(position);
+                String[] shownToSpinnerUrl = new String[myAdapter.getCount()];
+                String[] shownToSpinner = new String[myAdapter.getCount()];
+                if (productUrl.getUrl().contains("-store") == true) {
+                    for (int i = 0; i < myAdapter.getCount(); i++) {
+                        ProductData productDetails = myAdapter.getItem(i);
+                        shownToSpinner[i] = productDetails.getTitle();
+                        shownToSpinnerUrl[i] = productDetails.getUrl();
+                    }
+                    Intent setIntentProdId = new Intent(this, DrawerSpinnerActivity.class);
+                    setIntentProdId.putExtra("shownToDrawer", myDrawerTitles);
+                    setIntentProdId.putExtra("shownToDrawerUrl", myDrawerUrls);
+                    setIntentProdId.putExtra("shownToSpinner", shownToSpinner);
+                    setIntentProdId.putExtra("shownToSpinnerUrl", shownToSpinnerUrl);
+                    setIntentProdId.putExtra("baseUrl", shownToSpinnerUrl[position]);
+                    setIntentProdId.putExtra("selectPosition", position);
+                    startActivity(setIntentProdId);
+                } else {
+                    for (int i = 0; i < myAdapter.getCount(); i++) {
+                        ProductData productDetails = myAdapter.getItem(i);
+                        shownToSpinner[i] = productDetails.getTitle();
+                        shownToSpinnerUrl[i] = productDetails.getUrl();
+                    }
+                    Intent setIntentProdId = new Intent(this, PriceListActivity.class);
+                    setIntentProdId.putExtra("shownToDrawer", myDrawerTitles);
+                    setIntentProdId.putExtra("shownToDrawerUrl", myDrawerUrls);
+                    setIntentProdId.putExtra("shownToSpinner", shownToSpinner);
+                    setIntentProdId.putExtra("shownToSpinnerUrl", shownToSpinnerUrl);
+                    setIntentProdId.putExtra("baseUrl", shownToSpinnerUrl[position]);
+                    setIntentProdId.putExtra("selectPosition", position);
+                    startActivity(setIntentProdId);
                 }
-                Intent setIntentProdId = new Intent(this, DrawerSpinnerActivity.class);
-                setIntentProdId.putExtra("shownToDrawer",myDrawerTitles);
-                setIntentProdId.putExtra("shownToDrawerUrl",myDrawerUrls);
-                setIntentProdId.putExtra("shownToSpinner",shownToSpinner);
-                setIntentProdId.putExtra("shownToSpinnerUrl",shownToSpinnerUrl);
-                setIntentProdId.putExtra("baseUrl", shownToSpinnerUrl[position]);
-                setIntentProdId.putExtra("selectPosition", position);
-                finish();
-                startActivity(setIntentProdId);
             }
-            else{
-                for(int i=0; i<myAdapter.getCount();i++){
-                    ProductData productDetails = myAdapter.getItem(i);
-                    shownToSpinner[i] = productDetails.getTitle();
-                    shownToSpinnerUrl[i] = productDetails.getUrl();
-                }
-                Intent setIntentProdId = new Intent(this, PriceListActivity.class);
-                setIntentProdId.putExtra("shownToDrawer",myDrawerTitles);
-                setIntentProdId.putExtra("shownToDrawerUrl",myDrawerUrls);
-                setIntentProdId.putExtra("shownToSpinner",shownToSpinner);
-                setIntentProdId.putExtra("shownToSpinnerUrl",shownToSpinnerUrl);
-                setIntentProdId.putExtra("baseUrl", shownToSpinnerUrl[position]);
-                setIntentProdId.putExtra("selectPosition", position);
-                finish();
-                startActivity(setIntentProdId);
-            }
+        }
+
+        else if(rootView.getTag().toString() == "myAdapterMain"){
+            backCheck = 1;
+            selectItem(position);
         }
     }
 
@@ -297,19 +313,38 @@ public class DrawerActivity extends ActionBarActivity implements AbsListView.OnS
         @Override
         public View onCreateView(LayoutInflater inflater, ViewGroup container,
                                  Bundle savedInstanceState) {
-            View rootView = inflater.inflate(R.layout.activity_main, container, false);
+            rootView = inflater.inflate(R.layout.activity_main, container, false);
             drawerValue = getArguments().getInt(ARG_PLANET_NUMBER);
-            myGridView = (StaggeredGridView) rootView.findViewById(R.id.grid_view);
-            layoutInflater = getLayoutInflater();
-            footer = layoutInflater.inflate(R.layout.list_item_header_footer, null);
-            txtFooterTitle =  (TextView) footer.findViewById(R.id.txt_title);
-            txtFooterTitle.setText("THE FOOTER!");
-            myGridView.addFooterView(footer);
-            myAdapter = new GridAdapter(DrawerActivity.this, R.id.txt_line);
-            myGridView.setAdapter(myAdapter);
-            myGridView.setOnScrollListener(DrawerActivity.this);
-            myGridView.setOnItemClickListener(DrawerActivity.this);
-            new HttpAsyncTask().execute(baseUrl);
+
+            if(loadFirstTime == 1){
+                myGridView = (StaggeredGridView) rootView.findViewById(R.id.grid_view);
+                myAdapterMain = new GridAdapterMainActivity(DrawerActivity.this, R.id.txt_line);
+                myGridView.setAdapter(myAdapterMain);
+                myGridView.setOnItemClickListener(DrawerActivity.this);
+                setTitle("Browse Categories");
+                String image = null;
+                for(int i=0; i<6; i++){
+                    myAdapterMain.add(new ProductData(myDrawerTitles[i], image, myDrawerUrls[i]));
+                }
+                loadFirstTime = 0;
+                rootView.setTag("myAdapterMain");
+                backCheck = 5;
+            }
+            else if(loadFirstTime == 0) {
+                myGridView = (StaggeredGridView) rootView.findViewById(R.id.grid_view);
+                layoutInflater = getLayoutInflater();
+                footer = layoutInflater.inflate(R.layout.list_item_header_footer, null);
+                txtFooterTitle = (TextView) footer.findViewById(R.id.txt_title);
+                txtFooterTitle.setText("THE FOOTER!");
+                myGridView.addFooterView(footer);
+                myAdapter = new GridAdapter(DrawerActivity.this, R.id.txt_line);
+                myGridView.setAdapter(myAdapter);
+                myGridView.setOnScrollListener(DrawerActivity.this);
+                myGridView.setOnItemClickListener(DrawerActivity.this);
+                new HttpAsyncTask().execute(baseUrl);
+                rootView.setTag("myAdapter");
+                backCheck = 1;
+            }
             return rootView;
         }
     }

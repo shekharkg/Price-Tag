@@ -57,6 +57,7 @@ public class DrawerSpinnerActivity extends ActionBarActivity implements AbsListV
     String productTitle, productImage, productUrl;
     private static final String STATE_SELECTED_NAVIGATION_ITEM = "selected_navigation_item";
     private int spinnerCount=0;
+    ActionBar actionBar = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceStateCategory) {
@@ -77,7 +78,7 @@ public class DrawerSpinnerActivity extends ActionBarActivity implements AbsListV
         mDrawerList = (ListView) findViewById(R.id.left_drawer);
 
         // Set up the action bar to show a dropdown list.
-        final ActionBar actionBar = getSupportActionBar();
+        actionBar = getSupportActionBar();
         actionBar.setDisplayShowTitleEnabled(false);
         actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_LIST);
         // Set up the dropdown list navigation in the action bar.
@@ -168,7 +169,6 @@ public class DrawerSpinnerActivity extends ActionBarActivity implements AbsListV
                 setIntentProdId.putExtra("shownToSpinnerUrl",mySpinnerUrls);
                 setIntentProdId.putExtra("baseUrl", mySpinnerUrls[i]);
                 setIntentProdId.putExtra("selectPosition", i);
-                finish();
                 startActivity(setIntentProdId);
         }
         else{
@@ -226,38 +226,34 @@ public class DrawerSpinnerActivity extends ActionBarActivity implements AbsListV
     public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
         if(position != myAdapter.getCount()) {
             ProductData productUrl = myAdapter.getItem(position);
-            String[] shownToSpinnerUrl = new String[myAdapter.getCount()];
-            String[] shownToSpinner = new String[myAdapter.getCount()];
+            mySpinnerTitles = new String[myAdapter.getCount()];
             if(productUrl.getUrl().contains("-store") == true){
                 for(int i=0; i<myAdapter.getCount();i++){
                     ProductData productDetails = myAdapter.getItem(i);
-                    shownToSpinner[i] = productDetails.getTitle();
-                    shownToSpinnerUrl[i] = productDetails.getUrl();
+                    mySpinnerTitles[i] = productDetails.getTitle();
                 }
-                Intent setIntentProdId = new Intent(this, DrawerSpinnerActivity.class);
-                setIntentProdId.putExtra("shownToDrawer",myDrawerTitles);
-                setIntentProdId.putExtra("shownToDrawerUrl",myDrawerUrls);
-                setIntentProdId.putExtra("shownToSpinner",shownToSpinner);
-                setIntentProdId.putExtra("shownToSpinnerUrl",shownToSpinnerUrl);
-                setIntentProdId.putExtra("baseUrl", shownToSpinnerUrl[position]);
-                setIntentProdId.putExtra("selectPosition", position);
-                finish();
-                startActivity(setIntentProdId);
+
+                actionBar.setListNavigationCallbacks(
+                        // Specify a SpinnerAdapter to populate the dropdown list.
+                        new ArrayAdapter<String>(
+                                actionBar.getThemedContext(),android.R.layout.simple_list_item_1,
+                                android.R.id.text1, mySpinnerTitles), this);
+                actionBar.setSelectedNavigationItem(position);
             }
             else{
+                mySpinnerUrls = new String[myAdapter.getCount()];
                 for(int i=0; i<myAdapter.getCount();i++){
                     ProductData productDetails = myAdapter.getItem(i);
-                    shownToSpinner[i] = productDetails.getTitle();
-                    shownToSpinnerUrl[i] = productDetails.getUrl();
+                    mySpinnerTitles[i] = productDetails.getTitle();
+                    mySpinnerUrls[i] = productDetails.getUrl();
                 }
                 Intent setIntentProdId = new Intent(this, PriceListActivity.class);
                 setIntentProdId.putExtra("shownToDrawer",myDrawerTitles);
                 setIntentProdId.putExtra("shownToDrawerUrl",myDrawerUrls);
-                setIntentProdId.putExtra("shownToSpinner",shownToSpinner);
-                setIntentProdId.putExtra("shownToSpinnerUrl",shownToSpinnerUrl);
-                setIntentProdId.putExtra("baseUrl", shownToSpinnerUrl[position]);
+                setIntentProdId.putExtra("shownToSpinner",mySpinnerTitles);
+                setIntentProdId.putExtra("shownToSpinnerUrl",mySpinnerUrls);
+                setIntentProdId.putExtra("baseUrl", mySpinnerUrls[position]);
                 setIntentProdId.putExtra("selectPosition", position);
-                finish();
                 startActivity(setIntentProdId);
             }
         }

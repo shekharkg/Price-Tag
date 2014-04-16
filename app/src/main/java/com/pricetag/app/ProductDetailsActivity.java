@@ -7,8 +7,12 @@ import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.ActionBarActivity;
+import android.support.v7.widget.ShareActionProvider;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.webkit.WebView;
@@ -41,6 +45,8 @@ public class ProductDetailsActivity extends ActionBarActivity {
     WebView textDescription;
     private String[] sellerImage, sellerTitle, sellerPrice, sellerUrl;
     ListView sellerView;
+    private ShareActionProvider myShareActionProvider;
+    String stringShare;
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -52,6 +58,7 @@ public class ProductDetailsActivity extends ActionBarActivity {
         String[] tokens = prodImg.split("/");
         prodID = tokens[tokens.length-2];
 
+        stringShare = getResources().getString(R.string.shareString) +"\n \n \n"+ getResources().getString(R.string.shareString1);
         baseUrl = getResources().getString(R.string.api_url)+prodID;
         imageView = (ImageView) findViewById(R.id.imageView);
         textTitle = (TextView) findViewById(R.id.prod_title);
@@ -61,6 +68,25 @@ public class ProductDetailsActivity extends ActionBarActivity {
         new HttpAsyncTask().execute(baseUrl);
 
     }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.share, menu);
+        MenuItem shareItem = menu.findItem(R.id.menu_item_share);
+        myShareActionProvider = (ShareActionProvider)
+                MenuItemCompat.getActionProvider(shareItem);
+        myShareActionProvider.setShareIntent(createShareIntent());
+        return super.onCreateOptionsMenu(menu);
+    }
+
+
+    private Intent createShareIntent() {
+        Intent shareIntent = new Intent(Intent.ACTION_SEND);
+        shareIntent.setType("text/plain");
+        shareIntent.putExtra(Intent.EXTRA_TEXT, stringShare);
+        return shareIntent;
+    }
+
     class HttpAsyncTask extends AsyncTask<String, Void, String> {
         GetJsonString getJsonString = new GetJsonString();
 

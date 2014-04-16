@@ -80,18 +80,6 @@ public class PriceListActivity extends ActionBarActivity implements AbsListView.
         mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
         mDrawerList = (ListView) findViewById(R.id.left_drawer);
 
-        // Set up the action bar to show a dropdown list.
-        final ActionBar actionBar = getSupportActionBar();
-        actionBar.setDisplayShowTitleEnabled(false);
-        actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_LIST);
-        // Set up the dropdown list navigation in the action bar.
-        actionBar.setListNavigationCallbacks(
-                // Specify a SpinnerAdapter to populate the dropdown list.
-                new ArrayAdapter<String>(
-                        actionBar.getThemedContext(),android.R.layout.simple_list_item_1,
-                        android.R.id.text1, mySpinnerTitles), this);
-        actionBar.setSelectedNavigationItem(positionValue);
-
         // set a custom shadow that overlays the main content when the drawer opens
         mDrawerLayout.setDrawerShadow(R.drawable.drawer_shadow, GravityCompat.START);
         // set up the drawer's list view with items and click listener
@@ -121,6 +109,7 @@ public class PriceListActivity extends ActionBarActivity implements AbsListView.
             }
         };
         mDrawerLayout.setDrawerListener(mDrawerToggle);
+        selectItem(positionValue);
     }
 
     @Override
