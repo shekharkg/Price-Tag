@@ -98,7 +98,6 @@ public class DrawerSpinnerActivity extends ActionBarActivity implements AbsListV
 
         // enable ActionBar app icon to behave as action to toggle nav drawer
         getActionBar().setDisplayHomeAsUpEnabled(true);
-        // getActionBar().setHomeButtonEnabled(true);
 
         // ActionBarDrawerToggle ties together the the proper interactions
         // between the sliding drawer and the action bar app icon
@@ -117,6 +116,7 @@ public class DrawerSpinnerActivity extends ActionBarActivity implements AbsListV
                 invalidateOptionsMenu(); // creates call to onPrepareOptionsMenu()
             }
         };
+        mDrawerToggle.setDrawerIndicatorEnabled(false);
         mDrawerLayout.setDrawerListener(mDrawerToggle);
     }
 
@@ -271,6 +271,9 @@ public class DrawerSpinnerActivity extends ActionBarActivity implements AbsListV
             case R.id.action_search:
                 Intent intent = new Intent(this,SearchActivity.class);
                 startActivity(intent);
+                return(true);
+            case android.R.id.home:
+                finish();
                 return(true);
         }
         // Handle action buttons

@@ -56,7 +56,10 @@ public class ProductDetailsActivity extends ActionBarActivity {
             prodImg = getProductId.getStringExtra("productID");
         }
         String[] tokens = prodImg.split("/");
-        prodID = tokens[tokens.length-2];
+        try{
+            prodID = tokens[tokens.length-2];
+        }catch (Exception e){
+        }
 
         stringShare = getResources().getString(R.string.shareString) +"\n \n \n"+ getResources().getString(R.string.shareString1);
         baseUrl = getResources().getString(R.string.api_url)+prodID;
@@ -65,6 +68,9 @@ public class ProductDetailsActivity extends ActionBarActivity {
         textPriceMin = (TextView) findViewById(R.id.min_price);
         textDescription = (WebView) findViewById(R.id.prod_desc);
         sellerView = (ListView) findViewById(R.id.seller_list);
+
+        getActionBar().setDisplayHomeAsUpEnabled(true);
+        getActionBar().setHomeButtonEnabled(true);
         new HttpAsyncTask().execute(baseUrl);
 
     }
@@ -85,6 +91,18 @@ public class ProductDetailsActivity extends ActionBarActivity {
         shareIntent.setType("text/plain");
         shareIntent.putExtra(Intent.EXTRA_TEXT, stringShare);
         return shareIntent;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                finish();
+                return(true);
+        }
+        // Handle action buttons
+        return super.onOptionsItemSelected(item);
+
     }
 
     class HttpAsyncTask extends AsyncTask<String, Void, String> {
@@ -151,12 +169,11 @@ public class ProductDetailsActivity extends ActionBarActivity {
                 } catch (JSONException e) {
                     // TODO Auto-generated catch block
                     e.printStackTrace();
+                    imageView.setImageResource(R.drawable.not_found);
                 }
             }else if (connec.getNetworkInfo(0).getState() == NetworkInfo.State.DISCONNECTED ||  connec.getNetworkInfo(1).getState() == NetworkInfo.State.DISCONNECTED ) {
                 //Not connected.
-                imageView.setVisibility(View.INVISIBLE);
-                imageView.setMaxHeight(0);
-                textTitle.setText("Connect to Internet...");
+                imageView.setImageResource(R.drawable.connect_internet);
             }
         }
     }

@@ -60,6 +60,9 @@ public class SearchActivity extends ActionBarActivity implements AbsListView.OnS
         }
         page = 1;
 
+        getActionBar().setDisplayHomeAsUpEnabled(true);
+        getActionBar().setHomeButtonEnabled(true);
+
     }
 
     private void selectItem(int position) {
@@ -128,7 +131,11 @@ public class SearchActivity extends ActionBarActivity implements AbsListView.OnS
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                finish();
+                return(true);
+        }
         return super.onOptionsItemSelected(item);
 
     }

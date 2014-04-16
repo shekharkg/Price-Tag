@@ -109,6 +109,7 @@ public class PriceListActivity extends ActionBarActivity implements AbsListView.
             }
         };
         mDrawerLayout.setDrawerListener(mDrawerToggle);
+        mDrawerToggle.setDrawerIndicatorEnabled(false);
         selectItem(positionValue);
     }
 
@@ -257,6 +258,10 @@ public class PriceListActivity extends ActionBarActivity implements AbsListView.
             case R.id.action_search:
                 Intent intent = new Intent(this,SearchActivity.class);
                 startActivity(intent);
+                return(true);
+
+            case android.R.id.home:
+                finish();
                 return(true);
         }
         // Handle action buttons

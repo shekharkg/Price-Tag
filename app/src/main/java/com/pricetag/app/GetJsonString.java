@@ -1,7 +1,5 @@
 package com.pricetag.app;
 
-import android.util.Log;
-
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
@@ -39,7 +37,7 @@ public class GetJsonString {
                 result = "Did not work!";
 
         } catch (Exception e) {
-            Log.d("InputStream", e.getLocalizedMessage());
+            e.printStackTrace();
         }
 
         return result;
