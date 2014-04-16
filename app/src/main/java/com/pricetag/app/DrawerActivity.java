@@ -342,6 +342,7 @@ public class DrawerActivity extends ActionBarActivity implements AbsListView.OnS
                 new HttpAsyncTask().execute(baseUrl);
                 rootView.setTag("myAdapter");
                 backCheck = 1;
+                setTitle(myDrawerTitles[drawerValue]);
             }
             return rootView;
         }

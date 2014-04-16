@@ -367,6 +367,7 @@ public class PriceListActivity extends ActionBarActivity implements AbsListView.
             myGridView.setOnScrollListener(PriceListActivity.this);
             myGridView.setOnItemClickListener(PriceListActivity.this);
             new HttpAsyncTask().execute(baseUrl);
+            setTitle(mySpinnerTitles[drawerValue]);
             return rootView;
         }
     }
