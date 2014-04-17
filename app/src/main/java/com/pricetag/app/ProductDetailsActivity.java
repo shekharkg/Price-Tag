@@ -46,7 +46,7 @@ public class ProductDetailsActivity extends ActionBarActivity {
     private String[] sellerImage, sellerTitle, sellerPrice, sellerUrl;
     ListView sellerView;
     private ShareActionProvider myShareActionProvider;
-    String stringShare;
+    String stringShare = null;
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -61,7 +61,7 @@ public class ProductDetailsActivity extends ActionBarActivity {
         }catch (Exception e){
         }
 
-        stringShare = getResources().getString(R.string.shareString) +"\n \n \n"+ getResources().getString(R.string.shareString1);
+
         baseUrl = getResources().getString(R.string.api_url)+prodID;
         imageView = (ImageView) findViewById(R.id.imageView);
         textTitle = (TextView) findViewById(R.id.prod_title);
@@ -81,7 +81,6 @@ public class ProductDetailsActivity extends ActionBarActivity {
         MenuItem shareItem = menu.findItem(R.id.menu_item_share);
         myShareActionProvider = (ShareActionProvider)
                 MenuItemCompat.getActionProvider(shareItem);
-        myShareActionProvider.setShareIntent(createShareIntent());
         return super.onCreateOptionsMenu(menu);
     }
 
@@ -127,6 +126,7 @@ public class ProductDetailsActivity extends ActionBarActivity {
                 try {
                     JSONObject json = new JSONObject(result);
                     JSONObject products = json.getJSONObject("products");
+                    stringShare = products.getString("product_link");
                     setTitle(products.getString("name"));
                     Ion.with(imageView).placeholder(R.drawable.product).error(R.drawable.product).load(products.getString("large_image"));
                     textTitle.setText(products.getString("name"));
@@ -165,6 +165,8 @@ public class ProductDetailsActivity extends ActionBarActivity {
                             scrollview.fullScroll(ScrollView.FOCUS_UP);
                         }
                     });
+                    stringShare = getTitle() +"\n"+ stringShare +"\n \n Get the app at Play Store \n"+ getResources().getString(R.string.shareString);
+                    myShareActionProvider.setShareIntent(createShareIntent());
 
                 } catch (JSONException e) {
                     // TODO Auto-generated catch block

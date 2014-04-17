@@ -140,13 +140,13 @@ public class PriceListActivity extends ActionBarActivity implements AbsListView.
     private class DrawerItemClickListener implements ListView.OnItemClickListener {
         @Override
         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-            Intent setIntentProdId = new Intent(PriceListActivity.this, DrawerActivity.class);
+            Intent setIntentProdId = new Intent(PriceListActivity.this, DrawerActivityBack.class);
             setIntentProdId.putExtra("shownToDrawer",myDrawerTitles);
             setIntentProdId.putExtra("shownToDrawerUrl",myDrawerUrls);
             setIntentProdId.putExtra("baseUrl", myDrawerUrls[position]);
             setIntentProdId.putExtra("selectPosition", position);
-            finish();
             startActivity(setIntentProdId);
+            mDrawerLayout.closeDrawer(mDrawerList);
         }
     }
     @Override
