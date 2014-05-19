@@ -66,7 +66,6 @@ public class SearchActivity extends ActionBarActivity implements AbsListView.OnS
     }
 
     private void selectItem(int position) {
-        // update the main content by replacing fragments
         baseUrlWdOutPage = searchUrl.replace("searchQuery",searchValue);
         baseUrl = baseUrlWdOutPage.replace("pageNumber",""+page);
         Fragment fragment = new PlanetFragment();
@@ -167,7 +166,7 @@ public class SearchActivity extends ActionBarActivity implements AbsListView.OnS
 
 
             if (doc != null && connec != null && (connec.getNetworkInfo(1).getState() == NetworkInfo.State.CONNECTED) ||(doc != null && (connec.getNetworkInfo(0).getState() == NetworkInfo.State.CONNECTED))) {
-                //You are connected, do something online.
+
                 Elements title_img = doc.select("[height=130]");
                 Elements price = doc.select("[class=price]");
                 try {
@@ -198,15 +197,10 @@ public class SearchActivity extends ActionBarActivity implements AbsListView.OnS
             }
         }
     }
-
-    /**
-     * Fragment that appears in the "content_frame", shows a planet
-     */
     public class PlanetFragment extends Fragment {
         public static final String ARG_PLANET_NUMBER = "planet_number";
 
         public PlanetFragment() {
-            // Empty constructor required for fragment subclasses
         }
 
         @Override
