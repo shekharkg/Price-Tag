@@ -1,5 +1,4 @@
-Price-Tag(https://play.google.com/store/apps/details?id=com.pricetag.app)
-
+[Price-Tag](https://play.google.com/store/apps/details?id=com.pricetag.app)
 =========
 
 Compare prices of a product across different eCommerce seller in India.
@@ -10,4 +9,4 @@ Then directly navigate to the cheapest or your choice of website from where you 
 Check prices of: Mobiles, Tablets, Computers, Consumer electronics, Clothing, Footwear, Accessories, Kitchen & Home-Decor, Automobiles, Bike, Health & Beauty.
 
 
-[Price Tag](https://play.google.com/store/apps/details?id=com.pricetag.app)
+[Get the app on Play Store](https://play.google.com/store/apps/details?id=com.pricetag.app)
