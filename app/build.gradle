@@ -7,14 +7,13 @@ android {
     defaultConfig {
         minSdkVersion 11
         targetSdkVersion 13
-        versionCode 3
-        versionName "1.1.1"
+        versionCode 4
+        versionName "1.1.2"
     }
     buildTypes {
         release {
             runProguard true
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.txt'
-            zipAlign true
         }
     }
 }

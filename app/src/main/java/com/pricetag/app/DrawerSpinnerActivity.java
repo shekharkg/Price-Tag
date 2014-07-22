@@ -309,7 +309,7 @@ public class DrawerSpinnerActivity extends ActionBarActivity implements AbsListV
                 //You are connected, do something online.
                 Elements title_url = doc.select("[itemprop=itemListElement]");
                 Elements image = doc.select("[height=221]");
-                for(int i=0; i<title_url.size()-4; i++){
+                for(int i=0; i<title_url.size()-5; i++){
                     productTitle = title_url.get(i).text();
                     productUrl = title_url.get(i).attr("abs:href");
                     productImage = image.get(i).attr("abs:src");
